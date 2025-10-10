@@ -7,7 +7,7 @@ import { Password } from '../../../domain/value-objects/Password';
 
 describe('UpdateUser', () => {
   it('should update user information', async () => {
-    const repo = new MockUserRepository();
+    const repo = MockUserRepository.getInstance();
     const user = User.create('1', Name.create('John Doe'), Email.create('john@example.com'), Password.create('12345678'));
     await repo.save(user);
 

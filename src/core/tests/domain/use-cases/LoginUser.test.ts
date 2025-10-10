@@ -7,8 +7,8 @@ import { Password } from '../../../domain/value-objects/Password';
 
 describe('LoginUser', () => {
   it('should login with correct credentials', async () => {
-    const repo = new MockUserRepository();
-  const user = User.create('1', Name.create('John Doe'), Email.create('john@example.com'), Password.create('hashed_12345678'));
+    const repo = MockUserRepository.getInstance();
+    const user = User.create('1', Name.create('John Doe'), Email.create('john@example.com'), Password.create('hashed_12345678'));
     await repo.save(user);
 
     const useCase = new LoginUser(repo);
@@ -22,7 +22,7 @@ describe('LoginUser', () => {
   });
 
   it('should throw for invalid credentials', async () => {
-    const repo = new MockUserRepository();
+    const repo = MockUserRepository.getInstance();
     const useCase = new LoginUser(repo);
 
     await expect(

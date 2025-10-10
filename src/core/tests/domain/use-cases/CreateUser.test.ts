@@ -6,7 +6,7 @@ import { Password } from '../../../domain/value-objects/Password';
 
 describe('RegisterUser', () => {
   it('should create and save a new user', async () => {
-    const repo = new MockUserRepository();
+    const repo = MockUserRepository.getInstance();
     const useCase = new RegisterUser(repo);
 
     const user = await useCase.execute({

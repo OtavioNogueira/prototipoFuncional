@@ -5,7 +5,7 @@ import { UpdateUser } from '../domain/use-cases/User/UpdateUser';
 import { MockUserRepository } from '../infra/repositories/MockUserRepository';
 
 export function makeUserUseCases() {
-  const userRepository: IUserRepository = new MockUserRepository();
+  const userRepository: IUserRepository = MockUserRepository.getInstance();
 
   const registerUser = new RegisterUser(userRepository);
   const loginUser = new LoginUser(userRepository);
