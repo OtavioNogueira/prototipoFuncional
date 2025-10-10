@@ -2,7 +2,17 @@ import { IUserRepository } from '../../domain/repositories/IUserRepository';
 import { User } from '../../domain/entities/User';
 
 export class MockUserRepository implements IUserRepository {
+  private static instance: MockUserRepository;
   private users: User[] = [];
+
+  private constructor() {}
+
+  static getInstance() {
+    if (!MockUserRepository.instance) {
+      MockUserRepository.instance = new MockUserRepository();
+    }
+    return MockUserRepository.instance;
+  }
 
   async save(user: User): Promise<void> {
     this.users.push(user);

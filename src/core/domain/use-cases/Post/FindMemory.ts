@@ -1,4 +1,3 @@
-// src/domain/use-cases/FindMemory.ts
 import { Memory } from "../../entities/Memory";
 import { IMemoryRepository } from "../../repositories/IMemoryRepository";
 

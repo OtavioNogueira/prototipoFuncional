@@ -1,4 +1,3 @@
-// src/domain/use-cases/ListUserMemories.ts
 import { Memory } from "../../entities/Memory";
 import { IMemoryRepository } from "../../repositories/IMemoryRepository";
 

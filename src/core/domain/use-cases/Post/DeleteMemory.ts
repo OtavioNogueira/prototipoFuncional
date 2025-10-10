@@ -1,4 +1,3 @@
-// src/domain/use-cases/DeleteMemory.ts
 import { IMemoryRepository } from "../../repositories/IMemoryRepository";
 
 export class DeleteMemory {

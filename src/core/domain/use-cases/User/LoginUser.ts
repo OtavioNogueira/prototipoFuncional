@@ -1,4 +1,3 @@
-// src/domain/use-cases/LoginUser.ts
 import { User } from "../../entities/User";
 import { IUserRepository } from "../../repositories/IUserRepository";
 

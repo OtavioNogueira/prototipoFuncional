@@ -1,4 +1,3 @@
-// src/domain/use-cases/RegisterUser.ts
 import { User } from "../../entities/User";
 import { IUserRepository } from "../../repositories/IUserRepository";
 import { Name } from "../../value-objects/Name";
