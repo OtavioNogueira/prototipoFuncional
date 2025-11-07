@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, FlatList, Dimensions, Modal, TouchableOpacity, TextInput } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 import { styles } from "./styles";
-export function GaleriaScreen() {
+export function GaleriaScreen({ route, navigation }: any) {
   const [fotos, setFotos] = useState([
     { id: '1', uri: 'https://picsum.photos/id/1015/200/200', legenda: 'Esse dia foi realmente mágico de um jeito inexplicável! Estou ansioso para a próxima viagem. Não tenho o que dizer, são só elogios.', data: '08/09/2025', local: 'Praia Grande, SP' },
     { id: '2', uri: 'https://picsum.photos/id/1016/200/200', legenda: '', data: '10/09/2025', local: 'Rio de Janeiro, RJ' },
@@ -15,6 +15,15 @@ export function GaleriaScreen() {
   type FotoType = { id: string; uri: string; legenda: string; data: string; local: string };
   const [selectedFoto, setSelectedFoto] = useState<null | FotoType>(null);
   const [legendaInput, setLegendaInput] = useState("");
+
+  useEffect(() => {
+    if (route && route.params && route.params.newPhoto) {
+      const np = route.params.newPhoto as FotoType;
+      setFotos(prev => [np, ...prev]);
+      // clear param to avoid duplicate insertions
+      navigation.setParams({ newPhoto: undefined });
+    }
+  }, [route]);
 
   const numColumns = 2;
   const imageSize = Dimensions.get('window').width / numColumns - 16;
