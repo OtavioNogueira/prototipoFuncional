@@ -12,9 +12,7 @@ import { styles } from "./styles";
 import { ComponentButtonInterface } from "../../components";
 import { LoginTypes } from "../../navigations/LoginStackNavigation";
 import { useAuth } from "../../context/auth";
-import { MockUserRepository } from '../../core/infra/repositories/MockUserRepository';
-import { Email } from '../../core/domain/value-objects/Email';
-import { Password } from '../../core/domain/value-objects/Password';
+import { signIn, getUser } from '../../services/supabaseAuth';
 
 export function LoginScreen({ navigation }: LoginTypes) {
   const { setLogin } = useAuth();
@@ -31,12 +29,9 @@ export function LoginScreen({ navigation }: LoginTypes) {
     }
     try {
       setLoading(true);
-      const emailVO = new Email(email);
-      const passwordVO = new Password(password);
-      const repo = MockUserRepository.getInstance();
-      const user = await repo.findByEmail(emailVO.value);
-      if (!user || user.password.value !== passwordVO.value) {
-        setError("Usuário ou senha inválidos.");
+      const { error, data } = await signIn(email, password);
+      if (error || !data?.user) {
+        setError(error?.message || "Usuário ou senha inválidos.");
         setLoading(false);
         return;
       }

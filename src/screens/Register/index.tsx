@@ -8,11 +8,8 @@ import {
   Image,
   Platform
 } from "react-native";
-import { MockUserRepository } from '../../core/infra/repositories/MockUserRepository';
-import { Name } from '../../core/domain/value-objects/Name';
-import { Email } from '../../core/domain/value-objects/Email';
-import { Password } from '../../core/domain/value-objects/Password';
-import { User } from '../../core/domain/entities/User';
+import { signUp } from '../../services/supabaseAuth';
+import { inserirUsuario } from '../../services/supabaseUsuarios';
 import { styles } from "./styles";
 import { ComponentButtonInterface } from "../../components";
 import { LoginTypes } from "../../navigations/LoginStackNavigation";
@@ -38,19 +35,27 @@ export function RegisterScreen({ navigation }: LoginTypes) {
     }
     try {
       setLoading(true);
-      const nameVO = new Name(name);
-      const emailVO = new Email(email);
-      const passwordVO = new Password(password);
-      const id = Date.now().toString();
-      const user = User.create(id, nameVO, emailVO, passwordVO);
-      const repo = MockUserRepository.getInstance();
-      const exists = await repo.findByEmail(email);
-      if (exists) {
-        setError("Usuário já cadastrado com este email.");
+      const { data, error } = await signUp(email, password);
+      if (error) {
+        setError(error.message || "Erro ao cadastrar usuário.");
         setLoading(false);
         return;
       }
-      await repo.save(user);
+      // Se cadastro no Auth foi bem-sucedido, salva na tabela usuarios
+      const userId = data?.user?.id;
+      if (userId) {
+        const { error: dbError } = await inserirUsuario({
+          id: userId,
+          name,
+          email,
+          username
+        });
+        if (dbError) {
+          setError(dbError.message || "Erro ao salvar usuário no banco.");
+          setLoading(false);
+          return;
+        }
+      }
       setLoading(false);
       navigation.navigate("Login");
     } catch (e: any) {

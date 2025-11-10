@@ -1,12 +1,23 @@
 import React from "react";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../context/auth";
 import { colors } from "../../styles/colors";
+import { signOut } from "../../services/supabaseAuth";
 
 export function CustomDrawerContent(props: any) {
   const { setLogin } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      setLogin(false);
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      Alert.alert('Erro', 'Não foi possível sair. Tente novamente.');
+    }
+  };
 
   // 'Menu' é o nome da Drawer.Screen que contém o BottomTabNavigation
   const parentTabRouteName = "Menu";
@@ -46,7 +57,7 @@ export function CustomDrawerContent(props: any) {
       <View style={{ flex: 1 }} />
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.logout} onPress={() => setLogin(false)}>
+        <TouchableOpacity style={styles.logout} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color={colors.white} />
           <Text style={styles.logoutText}>Sair</Text>
         </TouchableOpacity>
