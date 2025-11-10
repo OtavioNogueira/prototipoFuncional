@@ -88,12 +88,14 @@ export function RegisterScreen({ navigation }: LoginTypes) {
         <View style={styles.formContainer}>
           <TextInput
             placeholder="Nome completo"
+            placeholderTextColor="#999"
             style={styles.input}
             value={name}
             onChangeText={setName}
           />
           <TextInput
             placeholder="Email"
+            placeholderTextColor="#999"
             style={styles.input}
             value={email}
             onChangeText={setEmail}
@@ -102,6 +104,7 @@ export function RegisterScreen({ navigation }: LoginTypes) {
           />
           <TextInput
             placeholder="Nome de usuário"
+            placeholderTextColor="#999"
             style={styles.input}
             value={username}
             onChangeText={setUsername}
@@ -109,6 +112,7 @@ export function RegisterScreen({ navigation }: LoginTypes) {
           />
           <TextInput
             placeholder="Criar senha"
+            placeholderTextColor="#999"
             style={styles.input}
             value={password}
             onChangeText={setPassword}
@@ -116,6 +120,7 @@ export function RegisterScreen({ navigation }: LoginTypes) {
           />
           <TextInput
             placeholder="Confirmar senha"
+            placeholderTextColor="#999"
             style={styles.input}
             value={confirmPassword}
             onChangeText={setConfirmPassword}

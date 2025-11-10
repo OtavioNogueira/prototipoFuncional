@@ -67,6 +67,7 @@ export function LoginScreen({ navigation }: LoginTypes) {
         <View style={styles.formContainer}>
           <TextInput
             placeholder="Email"
+            placeholderTextColor="#999"
             style={styles.input}
             autoCapitalize="none"
             value={email}
@@ -75,6 +76,7 @@ export function LoginScreen({ navigation }: LoginTypes) {
           />
           <TextInput
             placeholder="Senha"
+            placeholderTextColor="#999"
             style={styles.input}
             secureTextEntry
             value={password}

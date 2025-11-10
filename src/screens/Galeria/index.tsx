@@ -216,6 +216,7 @@ export function GaleriaScreen({ route, navigation }: any) {
               )}
             <TextInput
               placeholder="Digite a legenda..."
+              placeholderTextColor="#999"
               value={legendaInput}
               onChangeText={setLegendaInput}
               multiline
