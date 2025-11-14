@@ -69,7 +69,7 @@ npx expo start
 ## 📂 Estrutura do Projeto
 
 ```
-MobileVivi/
+Prova/
 ├── src/
 │   ├── screens/
 │   │   ├── Camera/      # Tela de captura de fotos
