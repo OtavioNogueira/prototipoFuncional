@@ -24,8 +24,8 @@ git --version
 
 ### 1. Clone o repositório
 ```bash
-git clone https://github.com/Alanakcb/MobileVivi.git
-cd MobileVivi
+git clone 'link do repositório'
+cd 'nome da pasta'
 ```
 
 ### 2. Instale as dependências
