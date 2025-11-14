@@ -113,11 +113,3 @@ npx expo start -c
 
 ### Erro de permissão da câmera
 - Certifique-se de permitir o acesso à câmera quando o app solicitar
-
-## 👤 Autor
-
-Desenvolvido por Otávio
-
-## 📄 Licença
-
-Este projeto é privado.
