@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, FlatList, Dimensions, Modal, TouchableOpacity, TextInput, Alert, ActivityIndicator } from "react-native";
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from "./styles";
-import { listarFotosStorage, deletarFotoStorage, atualizarLegendaFoto } from "../../services/supabaseFotos";
-import { getUser } from "../../services/supabaseAuth";
+
+type FotoType = { id: string; uri: string; legenda: string; data: string };
 
 export function GaleriaScreen({ route, navigation }: any) {
   const [fotos, setFotos] = useState<FotoType[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  type FotoType = { id: string; uri: string; legenda: string; data: string; local: string };
   const [selectedFoto, setSelectedFoto] = useState<null | FotoType>(null);
   const [legendaInput, setLegendaInput] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Carregar fotos do Supabase Storage quando a tela for focada (incluindo após login)
+  // Carregar fotos do AsyncStorage quando a tela for focada
   useFocusEffect(
     React.useCallback(() => {
       carregarFotos();
@@ -24,20 +24,10 @@ export function GaleriaScreen({ route, navigation }: any) {
   const carregarFotos = async () => {
     setLoading(true);
     try {
-      const { data: userData, error: userError } = await getUser();
-      if (userError || !userData?.user) {
-        Alert.alert('Erro', 'Usuário não autenticado');
-        setLoading(false);
-        return;
-      }
-
-      const userId = userData.user.id;
-      const { data, error } = await listarFotosStorage(userId);
-      if (error) {
-        console.error('Erro ao carregar fotos:', error);
-        Alert.alert('Erro', 'Não foi possível carregar as fotos');
-      } else if (data) {
-        setFotos(data);
+      const fotosJson = await AsyncStorage.getItem('@fotos');
+      if (fotosJson) {
+        const fotosArray = JSON.parse(fotosJson);
+        setFotos(fotosArray);
       }
     } catch (err) {
       console.error('Erro ao carregar fotos:', err);
@@ -60,15 +50,14 @@ export function GaleriaScreen({ route, navigation }: any) {
     if (!selectedFoto) return;
     
     try {
-      // Salvar legenda no Supabase (usando apenas o ID da foto)
-      const { error } = await atualizarLegendaFoto(selectedFoto.id, legendaInput);
-      if (error) {
-        Alert.alert('Erro', 'Não foi possível salvar a legenda');
-        return;
-      }
-
+      // Atualizar legenda no AsyncStorage
+      const fotosAtualizadas = fotos.map(f => 
+        f.id === selectedFoto.id ? { ...f, legenda: legendaInput } : f
+      );
+      await AsyncStorage.setItem('@fotos', JSON.stringify(fotosAtualizadas));
+      
       // Atualizar localmente
-      setFotos(fotos.map(f => f.id === selectedFoto.id ? { ...f, legenda: legendaInput } : f));
+      setFotos(fotosAtualizadas);
       Alert.alert('Sucesso', 'Legenda atualizada com sucesso!');
       setModalVisible(false);
     } catch (err) {
@@ -81,15 +70,14 @@ export function GaleriaScreen({ route, navigation }: any) {
     if (!selectedFoto) return;
     
     try {
-      // Remover legenda no Supabase
-      const { error } = await atualizarLegendaFoto(selectedFoto.id, '');
-      if (error) {
-        Alert.alert('Erro', 'Não foi possível remover a legenda');
-        return;
-      }
-
+      // Remover legenda no AsyncStorage
+      const fotosAtualizadas = fotos.map(f => 
+        f.id === selectedFoto.id ? { ...f, legenda: "" } : f
+      );
+      await AsyncStorage.setItem('@fotos', JSON.stringify(fotosAtualizadas));
+      
       // Atualizar localmente
-      setFotos(fotos.map(f => f.id === selectedFoto.id ? { ...f, legenda: "" } : f));
+      setFotos(fotosAtualizadas);
       setLegendaInput("");
       Alert.alert('Sucesso', 'Legenda removida!');
     } catch (err) {
@@ -114,22 +102,11 @@ export function GaleriaScreen({ route, navigation }: any) {
           style: 'destructive',
           onPress: async () => {
             try {
-              const { data: userData } = await getUser();
-              const userId = userData?.user?.id;
-              if (!userId) {
-                Alert.alert('Erro', 'Usuário não autenticado');
-                return;
-              }
-
-              // Deletar do Storage (isso também remove a legenda)
-              const { error } = await deletarFotoStorage(selectedFoto.id, userId);
-              if (error) {
-                Alert.alert('Erro', 'Não foi possível excluir a foto do servidor');
-                return;
-              }
-              
               // Remover da lista local
-              setFotos(fotos.filter(f => f.id !== selectedFoto.id));
+              const fotosAtualizadas = fotos.filter(f => f.id !== selectedFoto.id);
+              await AsyncStorage.setItem('@fotos', JSON.stringify(fotosAtualizadas));
+              
+              setFotos(fotosAtualizadas);
               setModalVisible(false);
               Alert.alert('Sucesso', 'Foto excluída com sucesso!');
             } catch (err) {

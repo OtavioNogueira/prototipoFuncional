@@ -2,11 +2,9 @@
 import { View, TextInput, TouchableOpacity, Image, Text, Alert } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from "../../styles/colors";
 import { styles } from "./styles";
-import { supabase } from '../../services/supabaseClient';
-import { getUser } from '../../services/supabaseAuth';
-import { salvarFoto } from '../../services/supabaseFotos';
 
 export function CameraScreen({ navigation }: any) {
   const [permission, requestPermission] = useCameraPermissions();
@@ -60,68 +58,27 @@ export function CameraScreen({ navigation }: any) {
   const savePhoto = async () => {
     if (!photoUri) return;
     try {
-      // 1. Obter usuário autenticado
-      const { data: userData } = await getUser();
-      const userId = userData?.user?.id;
-      if (!userId) {
-        Alert.alert('Erro', 'Usuário não autenticado.');
-        return;
-      }
-
-      // 2. Preparar upload com FormData
-      const fileExt = 'jpg';
-      const fileName = `${userId}_${Date.now()}.${fileExt}`;
-
-      const formData = new FormData();
-      formData.append('file', {
-        uri: photoUri,
-        name: `photo_${Date.now()}.jpg`,
-        type: 'image/jpeg',
-      } as unknown as Blob);
-
-      // 3. Upload para Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('fotos')
-        .upload(fileName, formData, {
-          contentType: 'image/jpeg',
-          upsert: true,
-        });
-
-      if (uploadError) {
-        Alert.alert('Erro ao enviar foto', uploadError.message);
-        return;
-      }
-
-      // 4. Obter URL pública
-      const { data: publicUrlData } = supabase.storage
-        .from('fotos')
-        .getPublicUrl(fileName);
-
-      const publicUrl = publicUrlData.publicUrl;
-      if (!publicUrl) {
-        Alert.alert('Erro', 'Não foi possível obter a URL da imagem.');
-        return;
-      }
-
-      // 5. Salvar a foto e legenda na tabela 'fotos'
-      const { error: dbError } = await salvarFoto({
-        image_url: publicUrl,
+      // Criar objeto da foto com dados
+      const novaFoto = {
+        id: Date.now().toString(),
+        uri: photoUri, // Salva a URI temporária da câmera
         legenda: caption,
-        user_id: userId
-      });
+        data: new Date().toLocaleDateString('pt-BR')
+      };
 
-      if (dbError) {
-        console.error('Erro ao salvar foto no banco:', dbError);
-        Alert.alert('Erro', 'Não foi possível salvar a foto no banco de dados');
-        return;
-      }
+      // Salvar no AsyncStorage
+      const fotosJson = await AsyncStorage.getItem('@fotos');
+      const fotos = fotosJson ? JSON.parse(fotosJson) : [];
+      fotos.push(novaFoto);
+      await AsyncStorage.setItem('@fotos', JSON.stringify(fotos));
 
-      // 6. Navegar para Galeria (ela vai recarregar automaticamente)
+      // Navegar para Galeria
       navigation.navigate('Galeria');
       setPhotoUri(null);
       setCaption('');
       Alert.alert('Sucesso', 'Foto salva com sucesso!');
     } catch (e: any) {
+      console.error('Erro ao salvar foto:', e);
       Alert.alert('Erro', e.message || 'Falha ao salvar foto.');
     }
   };

@@ -3,7 +3,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
-import { MapaScreen } from "../screens/Mapa";
+import { DrawerNavigationProp } from "@react-navigation/drawer";
 import { CameraScreen } from "../screens/Camera";
 import { GaleriaScreen } from "../screens/Galeria";
 import { colors } from "../styles/colors";
@@ -20,30 +20,6 @@ export function BottomTabNavigation() {
         tabBarStyle: { backgroundColor: colors.white },
       }}
     >
-      {/* Mapa */}
-      <Tab.Screen
-        name="Mapa"
-        component={MapaScreen}
-        options={({ navigation }) => ({
-          headerTitle: "Mapa",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigation.openDrawer()}
-              style={{ marginLeft: 12 }}
-            >
-              <Ionicons name="menu" size={28} color={colors.white} />
-            </TouchableOpacity>
-          ),
-          tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name="map"
-              size={28}
-              color={focused ? colors.primary : "gray"}
-            />
-          ),
-        })}
-      />
-
       {/* Câmera */}
       <Tab.Screen
         name="Camera"
@@ -52,17 +28,17 @@ export function BottomTabNavigation() {
           headerTitle: "Câmera",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => navigation.openDrawer()}
+              onPress={() => (navigation as any).openDrawer()}
               style={{ marginLeft: 12 }}
             >
               <Ionicons name="menu" size={28} color={colors.white} />
             </TouchableOpacity>
           ),
-          tabBarIcon: () => (
+          tabBarIcon: ({ focused }) => (
             <Ionicons
               name="add-circle"
               size={30}
-              color={colors.primary}
+              color={focused ? colors.primary : "gray"}
             />
           ),
         })}
@@ -76,7 +52,7 @@ export function BottomTabNavigation() {
           headerTitle: "Galeria",
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => navigation.openDrawer()}
+              onPress={() => (navigation as any).openDrawer()}
               style={{ marginLeft: 12 }}
             >
               <Ionicons name="menu" size={28} color={colors.white} />

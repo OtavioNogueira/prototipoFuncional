@@ -1,5 +1,2 @@
-export { LoginScreen as ScreenLogin } from "./Login"
-export { RegisterScreen as ScreenRegister } from "./Register"
-export { GaleriaScreen as ScreenPerfil } from "./Galeria"
-export { CameraScreen as ScreenCamera } from "./Camera"
-export { ListaScreen as ScreenLista } from "./Lista"
+export { GaleriaScreen } from "./Galeria"
+export { CameraScreen } from "./Camera"
